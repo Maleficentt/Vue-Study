@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <p @click="$store.commit('add')">sync{{$store.state.counter}}</p>
+    <p @click="$store.dispatch('add')">async{{$store.state.counter}}</p>
+    <p>double: {{$store.getters.doubleCounter}}</p>
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>

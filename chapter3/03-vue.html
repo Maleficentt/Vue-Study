@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="./vue.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <p @click="add">{{counter}}</p>
+    <p k-text="counter"></p>
+    <p k-html="desc"></p>
+    <input type="text" k-model="desc" />
+  </div>
+
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        counter: 1,
+        desc: '<span style="color: red">vue</span>'
+      },
+      methods: {
+        add() {
+          this.counter++
+        }
+      }
+    })
+    setInterval(() => {
+      app.counter++
+    }, 1000)
+  </script>
+</body>
+
+</html>

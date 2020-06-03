@@ -21,9 +21,10 @@ function defineReactive(obj, key, val) {
         console.log('set', key, newVal)
         observe(newVal)
         val = newVal
+
+        // 通知更新
+        dep.notify()
       }
-      // 通知更新
-      dep.notify()
     }
   })
 }
@@ -33,14 +34,6 @@ function observe(obj) {
   if (typeof obj !== 'object' || obj === null) {
     return
   }
-  Object.keys(obj).forEach(key => {
-    defineReactive(obj, key, obj[key])
-  })
-}
-
-// 新增属性无法被拦截，特定的api对其做响应式拦截
-function set(obj, key, val) {
-  defineReactive(obj, key, val)
 
   // 创建Observer实例：以后出现一个对象，就会有一个Observer实例
   // __ob__ 响应式对象
@@ -69,6 +62,7 @@ class Vue {
     this.$data = options.data
     // 响应化处理
     observe(this.$data)
+
     // 代理
     proxy(this)
 
@@ -100,30 +94,30 @@ class Compiler {
     this.$el = document.querySelector(el)
 
     // 执行编译
-    this.compiler(this.$el)
+    this.compile(this.$el)
   }
 
-  compiler(el) {
+  compile(el) {
     // 遍历el
     el.childNodes.forEach(node => {
       // 是否元素
       if (node.nodeType === 1) {
-        console.log('编译元素', node.nodeName)
-        this.compilerElement(node)
+        // console.log('编译元素', node.nodeName)
+        this.compileElement(node)
       } else if (this.isInter(node)) {
-        console.log('编译文本', node.textContent)
-        this.compilerText(node)
+        // console.log('编译文本', node.textContent)
+        this.compileText(node)
       }
 
       // 递归
       if (node.childNodes) {
-        this.compiler(node)
+        this.compile(node)
       }
     })
   }
 
   // 编译元素
-  compilerElement(node) {
+  compileElement(node) {
     // 处理元素上面的属性，以k- @ 开头
     const attrs = node.attributes
     Array.from(attrs).forEach(attr => {
@@ -154,6 +148,8 @@ class Compiler {
   }
 
   // dir：要做的指令名称
+  // 一旦发现一个动态绑定，都要做两件事情，首先解析动态值；其次创建更新函数
+  // 未来如果对应的exp它的值发生变化，执行这个watcher的更新函数
   update(node, exp, dir) {
     // 初始化
     const fn = this[dir + 'Updater']
@@ -173,7 +169,7 @@ class Compiler {
   }
 
   // 解析插值表达式
-  compilerText(node) {
+  compileText(node) {
     // 获取正则匹配表达式， 从vm取值
     // node.textContent = this.$vm[RegExp.$1]
     this.update(node, RegExp.$1, 'text')
@@ -182,7 +178,7 @@ class Compiler {
 
   // 文本节点且形如{{XXX}}
   isInter(node) {
-    return node.nodeType === 3 && /\{\{.*\}\}/.test(node.textContent)
+    return node.nodeType === 3 && /\{\{(.*)\}\}/.test(node.textContent)
   }
 }
 

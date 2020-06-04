@@ -60,6 +60,7 @@ class Vue {
     // 保存选项
     this.$options = options
     this.$data = options.data
+    this.$methods = options.methods
     // 响应化处理
     observe(this.$data)
 
@@ -132,6 +133,28 @@ class Compiler {
       }
       // 作业：k-model、@xx
       // 暗号：天王盖地虎
+      if (attrName.indexOf('@') === 0) {
+        const eventName = attrName.substring(1)
+        this.addEvent(node, eventName, exp)
+      }
+      if (attrName === 'k-model') {
+        this.model(node, exp)
+      }
+    })
+  }
+
+  // 注册事件
+  addEvent(node, eventName, exp) {
+    // 在class Vue中有this.$methods = this.options.methods
+    node.addEventListener(eventName, () => { this.$vm.$methods[exp].call(this.$vm) })
+  }
+
+  // 处理k-model
+  model(node, exp) {
+    node.value = this.$vm[exp]
+    console.log('k-model', this.$vm[exp])
+    node.addEventListener('input', (e) => {
+      this.$vm[exp] = e.target.value
     })
   }
 

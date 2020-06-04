@@ -13,7 +13,8 @@
     <p @click="add">{{counter}}</p>
     <p k-text="counter"></p>
     <p k-html="desc"></p>
-    <input type="text" k-model="desc" />
+    <input type="text" k-model="inputValue" />
+    <p>inputValue: {{inputValue}}</p>
   </div>
 
   <script>
@@ -21,7 +22,8 @@
       el: '#app',
       data: {
         counter: 1,
-        desc: '<span style="color: red">vue</span>'
+        desc: '<span style="color: red">vue</span>',
+        inputValue: '123'
       },
       methods: {
         add() {
@@ -29,9 +31,9 @@
         }
       }
     })
-    setInterval(() => {
-      app.counter++
-    }, 1000)
+    // setInterval(() => {
+    //   app.counter++
+    // }, 1000)
   </script>
 </body>
 

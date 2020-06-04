@@ -10,7 +10,8 @@
 
 <body>
   <div id="app">
-    <p @click="add">{{counter}}</p>
+    <p @click="add(10)">{{counter}}</p>
+    <p @click="sub">{{counter}}</p>
     <p k-text="counter"></p>
     <p k-html="desc"></p>
     <input type="text" k-model="inputValue" />
@@ -26,8 +27,11 @@
         inputValue: '123'
       },
       methods: {
-        add() {
-          this.counter++
+        add(val) {
+          this.counter += val
+        },
+        sub() {
+          this.counter--
         }
       }
     })

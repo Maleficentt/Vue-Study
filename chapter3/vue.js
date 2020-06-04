@@ -135,7 +135,23 @@ class Compiler {
       // 暗号：天王盖地虎
       if (attrName.indexOf('@') === 0) {
         const eventName = attrName.substring(1)
-        this.addEvent(node, eventName, exp)
+        let methodName = exp
+        const endIndex = exp.indexOf('(')
+        if (endIndex !== -1) {
+          methodName = exp.substring(0, endIndex)
+        }
+        const matches = exp.match(/\((.*)\)/)
+        let args = []
+        if (matches) {
+          args = matches[1].replace(/\s+/g, "").split(',').map(item => {
+            const arg = item.trim()
+            console.log('arg', typeof arg)
+            return /\'(.*)\'/.test(arg) ? Number(arg) : arg
+          })
+        }
+        // .replace(/\s+/g, "").split(',')
+        console.log(matches)
+        this.addEvent(node, eventName, methodName, args)
       }
       if (attrName === 'k-model') {
         this.model(node, exp)
@@ -144,9 +160,10 @@ class Compiler {
   }
 
   // 注册事件
-  addEvent(node, eventName, exp) {
+  addEvent(node, eventName, exp, args) {
     // 在class Vue中有this.$methods = this.options.methods
-    node.addEventListener(eventName, () => { this.$vm.$methods[exp].call(this.$vm) })
+    console.log(this.$vm.$methods)
+    node.addEventListener(eventName, () => { this.$vm.$methods[exp].call(this.$vm, ...args) })
   }
 
   // 处理k-model
